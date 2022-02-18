@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import {Container,Title} from './PublicRouterStyle'
 import { ReactComponent as Svg_search } from '../components/svg/search.svg';
+import { getSearchData } from '../firebase/firestore'
 import Post from '../components/Post';
 
 const SeachContainer = styled.div`
@@ -68,31 +69,40 @@ const ResultText = styled.div`
 `
 
 function Search() {
+  const [searchResult,setSearchResult] = useState(null);
   const useInput = (initialValue) => {
     const [value,setValue] = useState(initialValue);
     const onChange = (e) => {
       e.target.style.height = '20px'
       e.target.style.height = e.target.scrollHeight - 28 + 'px'
       setValue(e.target.value);
+      sessionStorage.setItem("searchKeyword", e.target.value)
     }
     return {value,onChange}
   }
-
-  const searchValue = useInput('');
+  const searchValue = useInput(sessionStorage.getItem("searchKeyword") || '');
 
   const svg_current = {width:13,height:13,fill:"black",style:{marginLeft:6}}
 
   return (
     <Container>
-      <Title style={{width:76}}>Search</Title>
+      <Title>Search</Title>
       <SeachContainer>
         <SearchInput {...searchValue} placeholder='검색어를 입력해주세요.' />
-        <SearchBtn>에러메세지로 검색<Svg_search {...svg_current} /></SearchBtn>
-        <SearchBtn>제목으로 검색<Svg_search {...svg_current} /></SearchBtn>
-        <ResultText>Result</ResultText>
+        <SearchBtn onClick={()=>{getSearchData(searchValue.value,"errMsg").then((result)=>{setSearchResult(result)})}}>에러메세지로 검색<Svg_search {...svg_current} /></SearchBtn>
+        <SearchBtn onClick={()=>{getSearchData(searchValue.value,"title").then((result)=>{setSearchResult(result)})}}>제목으로 검색<Svg_search {...svg_current} /></SearchBtn>
+        {
+          searchResult && searchResult.length
+          ? <ResultText>Result</ResultText>
+          : <></>
+        }
         <ResultContainer>
-          <Post />
-          <Post />
+          {
+            searchResult &&
+            searchResult.map((data,key)=>{
+              return <Post key={key} data={data} />
+            })
+          }
         </ResultContainer>
       </SeachContainer>
     </Container>

@@ -1,31 +1,47 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components'
 import Post from '../components/Post';
 import {Container,Title} from './PublicRouterStyle'
-import firebase from '../firebase';
+import { getHomeData } from '../firebase/firestore'
 
 const PostContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   width:100%;
+  height:auto;
   padding-left: 16px;
 `
 
 function Home() {
-  const db = firebase.firestore();
-
+  const [post,setPost] = useState(null);
+  const [loading,setLoading] = useState(false)
+  
   useEffect(()=>{
-    
+    getHomeData().then((result)=>{setPost(result)});
+  },[])
+
+  window.addEventListener('scroll',(e)=>{
+    if(!loading){
+      if(window.scrollY > document.body.scrollHeight - window.innerHeight - 200){
+        setLoading(true);
+        getHomeData('add').then((result)=>{
+          setPost(result);
+          setLoading(false);
+        });
+      }
+    }
   })
 
   return (
     <Container>
-      <Title style={{width:68}}>Home</Title>
+      <Title>Home</Title>
       <PostContainer>
-        <Post />
-        <Post />
-        <Post />
-        <Post />
+        {
+          post &&
+          post.map((data,key)=>{
+            return <Post key={key} data={data} />
+          })
+        }
       </PostContainer>
     </Container>
   );

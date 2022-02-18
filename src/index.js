@@ -7,11 +7,19 @@ import reportWebVitals from './reportWebVitals';
 
 import {BrowserRouter} from 'react-router-dom'
 
+sessionStorage.clear();
+
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Layout />
-    </BrowserRouter>
+    {
+      navigator.appVersion.split(' ')[0] == '5.0'
+      ? (
+        <BrowserRouter>
+          <Layout />
+        </BrowserRouter>
+      )
+      : <div style={{color:'red',fontSize:'16px',fontWeight:600,width:'100vw',height:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}>Html version is not 5.0</div>
+    }
   </React.StrictMode>,
   document.getElementById('root')
 );

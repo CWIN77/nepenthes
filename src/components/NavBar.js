@@ -12,8 +12,6 @@ import { ReactComponent as Svg_profile } from './svg/profile.svg';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import Page from './Page';
-
 const Container = styled.div`
   display:flex;
   flex-direction: column;
@@ -21,32 +19,46 @@ const Container = styled.div`
   align-items: center;
   position: fixed;
   right:0px;
+  bottom:0px;
   background-color: #CA3334;
-  height:100vh;
+  height:100%;
   width:70px;
 `
 const NavBtnWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
-  height:38%;
+  justify-content: space-between;
+  margin-bottom: 20px;
+`
+const ProfileImg = styled.img`
+  width :24px;
+  height:24px;
+  border-radius: 100px;
+  padding: 14px;
 `
 
 function NavBar() {
-  const svg_current = {width:24, height:24, fill:'white',style:{padding:'8px'}}
+  const svg_current = {width:24, height:24, fill:'white',style:{padding:14}}
   const [pathname,setPathName] = useState(window.location.pathname);
-
-  useEffect(()=>{
-    
-  },[])
-
+  const user = JSON.parse(localStorage.getItem('user'));
   return (
     <Container>
       <Svg_logo style={{paddingTop:'22px'}} />
-      {/* <Page /> */}
       <NavBtnWrapper>
         <Link to="/profile" onClick={() => {setPathName('/profile')}}>
-          <Svg_profile {...svg_current} />
+          {
+            user
+            ? (
+              pathname == '/profile'
+              ? (
+                <div style={{padding:14}}>
+                  <ProfileImg style={{boxShadow:'0px 0px 0px 2.5px white',padding:0}} src={user.photoURL} />
+                </div>
+              )
+              : <ProfileImg src={user.photoURL} />
+            )
+            : <Svg_profile {...svg_current} />
+          }
         </Link>
         <Link to="/bookmark" onClick={() => {setPathName('/bookmark')}}>
           {

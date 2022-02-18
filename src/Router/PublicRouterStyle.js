@@ -9,9 +9,9 @@ export const Container = styled.div`
 `
 export const Title = styled.div`
   display: flex;
+  align-items: center;
   margin-top: 26px;
   margin-left: 28px;
-  border-bottom: 3px solid white;
   font-size: 24px;
   margin-bottom: 18px;
 `
